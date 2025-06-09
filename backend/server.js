@@ -95,6 +95,20 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/api/auth', authRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
+// Root route handler
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Student Feedback System API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      feedback: '/api/feedback',
+      health: '/api/health'
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
