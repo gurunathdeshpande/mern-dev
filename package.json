@@ -1,19 +1,11 @@
 {
   "name": "student-feedback-system",
   "version": "1.0.0",
-  "description": "Student Feedback System - Full Stack Application",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "install-backend": "cd backend && npm install",
-    "install-frontend": "cd frontend && npm install",
-    "build-frontend": "cd frontend && npm run build",
-    "postinstall": "npm run install-backend && npm run install-frontend && npm run build-frontend",
-    "start": "cd backend && npm start"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.2"
+    "start": "cd backend && npm start",
+    "install-all": "cd backend && npm install && cd ../frontend && npm install --legacy-peer-deps",
+    "build": "cd frontend && npm run build",
+    "deploy": "npm run install-all && npm run build"
   }
 }
