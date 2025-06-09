@@ -10,7 +10,7 @@ services:
       - key: CI
         value: "false"
       - key: REACT_APP_API_URL
-        value: https://student-feedback-backend.onrender.com/api
+        value: https://student-feedback-backend1.onrender.com
     routes:
       - type: rewrite
         source: /*
@@ -33,7 +33,9 @@ services:
       - key: MONGODB_URI
         sync: false
       - key: FRONTEND_URL
-        value: https://student-feedback-frontend.onrender.com
+        value: https://student-feedback-frontend1.onrender.com
       - key: PORT
         value: "10000"
+      - key: CORS_ORIGIN
+        value: https://student-feedback-frontend1.onrender.com
     healthCheckPath: /api/health 

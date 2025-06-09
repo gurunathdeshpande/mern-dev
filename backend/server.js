@@ -40,56 +40,59 @@ console.log('JWT_COOKIE_EXPIRE:', process.env.JWT_COOKIE_EXPIRE);
 
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: 'https://student-feedback-frontend1.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: true,
+  maxAge: 86400,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+};
+
+// Enable CORS with options
+app.use(cors(corsOptions));
+
+// Handle OPTIONS preflight for all routes
+app.options('*', cors(corsOptions));
+
 // Body parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Cookie parser
 app.use(cookieParser());
 
 // Security headers
 app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
+      connectSrc: ["'self'", "https://student-feedback-frontend1.onrender.com"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https:", "http:"],
       fontSrc: ["'self'", "https:", "data:"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'self'"],
     },
-  },
+  }
 }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
+  windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
 });
-app.use('/api', limiter);
+
+// Apply rate limiting to all routes
+app.use(limiter);
 
 // Prevent XSS attacks
 app.use(xss());
 
 // Sanitize data
 app.use(mongoSanitize());
-
-// Enable CORS
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://student-feedback-frontend1.onrender.com', 'https://student-feedback-backend1.onrender.com']
-    : 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 600 // 10 minutes
-}));
-
-// Add pre-flight handling for all routes
-app.options('*', cors());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
