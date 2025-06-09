@@ -2,11 +2,15 @@ services:
   - type: web
     name: student-feedback-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && npm install --legacy-peer-deps && npm run build
     staticPublishPath: ./frontend/build
     envVars:
       - key: NODE_ENV
         value: production
+      - key: CI
+        value: "false"
+      - key: REACT_APP_API_URL
+        value: https://student-feedback-backend.onrender.com/api
     routes:
       - type: rewrite
         source: /*
@@ -30,4 +34,6 @@ services:
         sync: false
       - key: FRONTEND_URL
         value: https://student-feedback-frontend.onrender.com
+      - key: PORT
+        value: "10000"
     healthCheckPath: /api/health 
