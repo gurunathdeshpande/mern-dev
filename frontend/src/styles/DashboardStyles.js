@@ -1,0 +1,165 @@
+import { alpha } from '@mui/material/styles';
+
+export const dashboardStyles = {
+  pageContainer: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
+    padding: '24px 0',
+    marginLeft: { xs: 0, md: '250px' },
+    marginTop: '64px',
+  },
+  statsContainer: {
+    marginBottom: '32px',
+  },
+  statCard: {
+    background: 'white',
+    borderRadius: '16px',
+    padding: '24px',
+    height: '100%',
+    transition: 'all 0.3s ease-in-out',
+    position: 'relative',
+    overflow: 'hidden',
+    '&:hover': {
+      transform: 'translateY(-5px)',
+      boxShadow: '0 8px 24px rgba(79, 70, 229, 0.15)',
+      '&::after': {
+        transform: 'translateX(100%)',
+      },
+    },
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      top: 0,
+      left: '-100%',
+      width: '100%',
+      height: '4px',
+      background: 'linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.2), transparent)',
+      transition: 'transform 0.5s ease-in-out',
+    },
+  },
+  statIcon: {
+    width: '48px',
+    height: '48px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '16px',
+    background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(79, 70, 229, 0.2) 100%)',
+  },
+  feedbackCard: {
+    background: 'white',
+    borderRadius: '16px',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease-in-out',
+    border: '1px solid rgba(79, 70, 229, 0.1)',
+    '&:hover': {
+      transform: 'translateY(-5px)',
+      boxShadow: '0 8px 24px rgba(79, 70, 229, 0.15)',
+      borderColor: 'rgba(79, 70, 229, 0.2)',
+    },
+  },
+  feedbackHeader: {
+    padding: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(79, 70, 229, 0.1) 100%)',
+  },
+  feedbackContent: {
+    padding: '20px',
+  },
+  feedbackFooter: {
+    padding: '16px',
+    background: 'rgba(79, 70, 229, 0.03)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderTop: '1px solid rgba(79, 70, 229, 0.1)',
+  },
+  avatar: {
+    background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+    width: '40px',
+    height: '40px',
+    marginRight: '12px',
+    border: '2px solid white',
+    boxShadow: '0 2px 4px rgba(79, 70, 229, 0.1)',
+  },
+  chip: {
+    borderRadius: '8px',
+    fontWeight: 600,
+    textTransform: 'capitalize',
+    border: '1px solid rgba(79, 70, 229, 0.1)',
+  },
+  addButton: {
+    position: 'fixed',
+    bottom: '24px',
+    right: '24px',
+    borderRadius: '50%',
+    width: '64px',
+    height: '64px',
+    background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+    boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
+    '&:hover': {
+      background: 'linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%)',
+      transform: 'translateY(-2px)',
+      boxShadow: '0 6px 16px rgba(79, 70, 229, 0.4)',
+    },
+  },
+  addIcon: {
+    fontSize: '32px',
+    color: 'white',
+  },
+  progressBar: {
+    height: '8px',
+    borderRadius: '4px',
+    background: 'rgba(79, 70, 229, 0.1)',
+    '& .MuiLinearProgress-bar': {
+      borderRadius: '4px',
+      background: 'linear-gradient(90deg, #4F46E5, #7C3AED)',
+    },
+  },
+  menuItem: {
+    gap: '8px',
+    borderRadius: '8px',
+    margin: '4px 8px',
+    padding: '8px 16px',
+    '&:hover': {
+      backgroundColor: 'rgba(79, 70, 229, 0.1)',
+    },
+  },
+  noFeedback: {
+    textAlign: 'center',
+    padding: '48px',
+    background: 'white',
+    borderRadius: '16px',
+    marginTop: '24px',
+    border: '1px solid rgba(79, 70, 229, 0.1)',
+    '& svg': {
+      color: '#4F46E5',
+      fontSize: '64px',
+      marginBottom: '16px',
+    },
+  },
+  loadingContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '60vh',
+    gap: '16px',
+  },
+  loadingProgress: {
+    width: '60px !important',
+    height: '60px !important',
+    color: '#4F46E5 !important',
+  },
+  '@keyframes shimmer': {
+    '0%': {
+      backgroundPosition: '-1000px 0',
+    },
+    '100%': {
+      backgroundPosition: '1000px 0',
+    },
+  },
+}; 
