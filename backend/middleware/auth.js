@@ -3,11 +3,7 @@ const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 
 // Get JWT secret from environment variables
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  console.error('JWT_SECRET is not set in environment variables');
-  process.exit(1);
-}
+const JWT_SECRET = process.env.JWT_SECRET || 'temporary_secret_key_do_not_use_in_production';
 
 exports.generateToken = (userId) => {
     return jwt.sign({ id: userId }, JWT_SECRET, {

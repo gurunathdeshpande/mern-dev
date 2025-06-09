@@ -11,15 +11,65 @@ const path = require('path');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
+const User = require('./models/User');
 
 const authRoutes = require('./routes/authRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 
 // Load env vars
-dotenv.config();
+const result = dotenv.config();
+if (result.error) {
+  console.error('Error loading .env file:', result.error);
+}
+
+// Set default values for required environment variables
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.PORT = process.env.PORT || 5000;
+process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/student-feedback';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'temporary_secret_key_do_not_use_in_production';
+process.env.JWT_EXPIRE = process.env.JWT_EXPIRE || '30d';
+process.env.JWT_COOKIE_EXPIRE = process.env.JWT_COOKIE_EXPIRE || '30';
+
+// Debug environment variables
+console.log('Environment Variables:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+console.log('JWT_EXPIRE:', process.env.JWT_EXPIRE);
+console.log('JWT_COOKIE_EXPIRE:', process.env.JWT_COOKIE_EXPIRE);
 
 // Connect to database
 connectDB();
+
+// Create test user if it doesn't exist
+const createTestUser = async () => {
+  try {
+    const testUser = await User.findOne({ email: 'test@example.com' });
+    if (!testUser) {
+      const newUser = await User.create({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'Test123!',
+        role: 'teacher',
+        firstName: 'Test',
+        lastName: 'User',
+        department: 'Computer Science'
+      });
+      console.log('Test user created:', newUser.email);
+      // Generate token for test user
+      const token = newUser.getSignedJwtToken();
+      console.log('Test user token:', token);
+    } else {
+      console.log('Test user already exists');
+      // Generate token for existing test user
+      const token = testUser.getSignedJwtToken();
+      console.log('Test user token:', token);
+    }
+  } catch (err) {
+    console.error('Error creating test user:', err);
+  }
+};
 
 const app = express();
 
@@ -94,15 +144,6 @@ if (process.env.NODE_ENV === 'production') {
 // Error handling
 app.use(errorHandler);
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.error('MongoDB connection error:', err));
-
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
   console.log(`Error: ${err.message}`);
@@ -119,8 +160,10 @@ process.on('uncaughtException', (err) => {
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  // Create test user after server starts
+  await createTestUser();
 });
 
 // Handle graceful shutdown
