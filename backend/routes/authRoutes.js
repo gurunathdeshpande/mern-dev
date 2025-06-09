@@ -15,17 +15,119 @@ const {
   updateProfile
 } = require('../controllers/authController');
 
-// Register user
-router.post('/register', register);
+// @desc    Register user
+// @route   POST /api/auth/register
+router.post('/register', async (req, res, next) => {
+  try {
+    const { username, email, password, firstName, lastName, role } = req.body;
 
-// Login user
-router.post('/login', login);
+    // Validate required fields
+    if (!username || !email || !password || !firstName || !lastName || !role) {
+      return next(new ErrorResponse('Please provide all required fields', 400));
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return next(new ErrorResponse('User with this email already exists', 400));
+    }
+
+    // Create user
+    const user = await User.create({
+      username,
+      email,
+      password,
+      firstName,
+      lastName,
+      role
+    });
+
+    // Create token
+    const token = user.getSignedJwtToken();
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Login user
+// @route   POST /api/auth/login
+router.post('/login', async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate email & password
+    if (!email || !password) {
+      return next(new ErrorResponse('Please provide email and password', 400));
+    }
+
+    // Check for user
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return next(new ErrorResponse('Invalid credentials', 401));
+    }
+
+    // Check if password matches
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      return next(new ErrorResponse('Invalid credentials', 401));
+    }
+
+    // Create token
+    const token = user.getSignedJwtToken();
+
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Logout user
 router.get('/logout', logout);
 
-// Get current logged in user
-router.get('/me', protect, getMe);
+// @desc    Get current logged in user
+// @route   GET /api/auth/me
+router.get('/me', protect, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Update user details
 router.put('/update-profile', protect, updateProfile);
