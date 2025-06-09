@@ -7,7 +7,6 @@ const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cookieParser = require('cookie-parser');
-const path = require('path');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
@@ -39,43 +38,10 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 console.log('JWT_EXPIRE:', process.env.JWT_EXPIRE);
 console.log('JWT_COOKIE_EXPIRE:', process.env.JWT_COOKIE_EXPIRE);
 
-// Connect to database
-connectDB();
-
-// Create test user if it doesn't exist
-const createTestUser = async () => {
-  try {
-    const testUser = await User.findOne({ email: 'test@example.com' });
-    if (!testUser) {
-      const newUser = await User.create({
-        username: 'testuser',
-        email: 'test@example.com',
-        password: 'Test123!',
-        role: 'teacher',
-        firstName: 'Test',
-        lastName: 'User',
-        department: 'Computer Science'
-      });
-      console.log('Test user created:', newUser.email);
-      // Generate token for test user
-      const token = newUser.getSignedJwtToken();
-      console.log('Test user token:', token);
-    } else {
-      console.log('Test user already exists');
-      // Generate token for existing test user
-      const token = testUser.getSignedJwtToken();
-      console.log('Test user token:', token);
-    }
-  } catch (err) {
-    console.error('Error creating test user:', err);
-  }
-};
-
 const app = express();
 
 // Body parser
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Cookie parser
 app.use(cookieParser());
@@ -125,42 +91,49 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// API Routes
+// Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
-// Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  const frontendBuildPath = path.join(__dirname, '../frontend/build');
-  
-  // Serve static files
-  app.use(express.static(frontendBuildPath));
-
-  // Serve index.html for all routes except /api
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.resolve(frontendBuildPath, 'index.html'));
-    }
-  });
-}
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
 // Error handling
 app.use(errorHandler);
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`);
-  // Close server & exit process
-  process.exit(1);
-});
+// Connect to database
+connectDB();
 
-// Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
-  console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
-  process.exit(1);
-});
+// Create test user if it doesn't exist
+const createTestUser = async () => {
+  try {
+    const testUser = await User.findOne({ email: 'test@example.com' });
+    if (!testUser) {
+      const newUser = await User.create({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'Test@123',
+        role: 'teacher',
+        firstName: 'Test',
+        lastName: 'User',
+        department: 'Computer Science'
+      });
+      console.log('Test user created:', newUser.email);
+      // Generate token for test user
+      const token = newUser.getSignedJwtToken();
+      console.log('Test user token:', token);
+    } else {
+      console.log('Test user already exists');
+      // Generate token for existing test user
+      const token = testUser.getSignedJwtToken();
+      console.log('Test user token:', token);
+    }
+  } catch (err) {
+    console.error('Error creating test user:', err);
+  }
+};
 
 const PORT = process.env.PORT || 5000;
 
