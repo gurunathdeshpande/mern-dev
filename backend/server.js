@@ -79,12 +79,17 @@ app.use(mongoSanitize());
 // Enable CORS
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://student-feedback-frontend.onrender.com', 'https://student-feedback-backend.onrender.com']
+    ? ['https://student-feedback-frontend1.onrender.com', 'https://student-feedback-backend1.onrender.com']
     : 'http://localhost:3000',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600 // 10 minutes
 }));
+
+// Add pre-flight handling for all routes
+app.options('*', cors());
 
 // Dev logging middleware
 if (process.env.NODE_ENV === 'development') {
