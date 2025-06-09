@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-const baseURL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // In production, use relative path
-  : 'http://localhost:5000/api'; // In development, use localhost
+const baseURL = process.env.REACT_APP_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://student-feedback-backend.onrender.com/api'
+    : 'http://localhost:5000/api');
 
 const instance = axios.create({
   baseURL,

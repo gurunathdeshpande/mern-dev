@@ -112,8 +112,12 @@ app.use(mongoSanitize());
 
 // Enable CORS
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? false : 'http://localhost:3000',
-  credentials: true
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://student-feedback-frontend.onrender.com', 'https://student-feedback-backend.onrender.com']
+    : 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Dev logging middleware
